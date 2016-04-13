@@ -1,5 +1,8 @@
 # apkrename
-Rename package names of Android apks
+Rename package names of Android apks. This is **not** an Obfuscator, so internal structure and names
+of the package stay the same. Only the package name in `AndroidManifest.xml` is changed such that
+you can shorten package names in order to circumvent some restrictions, e.g. length of package
+names for logwrapper.
 
 # Dependencies
 - python3

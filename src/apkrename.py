@@ -6,7 +6,7 @@ import argparse
 import subprocess
 import tempfile
 import shutil
-
+import xml.etree.ElementTree as ET
 
 def unpack(apkfile):
     if not os.path.isfile(apkfile):
@@ -19,20 +19,15 @@ def unpack(apkfile):
 def rename(srcdir, old_name, new_name):
     if old_name == new_name:
         return
-    with open("{}/AndroidManifest.xml".format(srcdir), 'r+') as manifest:
-        data = manifest.read()
-        manifest.seek(0)
-        manifest.truncate()
-        manifest.write(data.replace(old_name, new_name))
-    files = glob.glob("{}/smali/**/*.smali".format(srcdir), recursive=True)
-    old_name_smali_syntax = "L{}".format(old_name.replace('.', '/'))
-    new_name_smali_syntax = "L{}".format(new_name.replace('.', '/'))
-    for smalifile in files:
-        with open(smalifile, 'r+') as sf:
-            data = sf.read()
-            sf.seek(0)
-            sf.truncate()
-            sf.write(data.replace(old_name_smali_syntax, new_name_smali_syntax))
+    tree = ET.parse('{}/AndroidManifest.xml'.format(srcdir))
+    root = tree.getroot()
+    manifest_element = next(root.iter("manifest"), None)
+    assert manifest_element != None
+    assert manifest_element.tag == "manifest"
+    assert "package" in manifest_element.attrib.keys()
+    assert manifest_element.attrib["package"] == old_name
+    manifest_element.attrib["package"] = new_name
+    tree.write("{}/AndroidManifest.xml".format(srcdir))
 
 
 def pack(srcdir, name):
