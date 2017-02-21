@@ -8,11 +8,13 @@ import tempfile
 import shutil
 import xml.etree.ElementTree as ET
 
+apktool_path = "D:/apkToolkit/apktool.jar"
+
 def unpack(apkfile):
     if not os.path.isfile(apkfile):
         raise ValueError("apkfile {} does not exist".format(apkfile))
     directory = tempfile.mkdtemp()
-    subprocess.call(["apktool", "d", "-f", "-o", directory, apkfile])
+    subprocess.call(["java","-jar",apktool_path, "d", "-f", "-o", directory, apkfile])
     return directory
 
 
@@ -31,7 +33,7 @@ def rename(srcdir, old_name, new_name):
 
 
 def pack(srcdir, name):
-    subprocess.call(["apktool", "b", "-o", "modified_{}.apk".format(name), srcdir])
+    subprocess.call(["java","-jar",apktool_path, "b", "-o", "modified_{}.apk".format(name), srcdir])
 
 
 def main():
